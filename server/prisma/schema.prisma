@@ -12,3 +12,92 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String? //สามารถเป็นค่าว่างได้ เผื่อ login google ไม่ต้องมี password
+  name      String?
+  picture   String? //login google มีรูปมาเอง
+  role      String   @default("user")
+  enabled   Boolean  @default(true)
+  address   String?
+  order     Order[]
+  cart      Cart[]
+  createdAt DateTime @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
+  updatedAt DateTime @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
+}
+
+model Product {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  sold        Int              @default(0)
+  quantity    Int
+  orderItems  ProductOnOrder[]
+  cartItems   ProductOnCart[]
+  iamges      Image[]
+  createdAt   DateTime         @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
+  updatedAt   DateTime         @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
+}
+
+model Order {
+  id          Int              @id @default(autoincrement())
+  products    ProductOnOrder[]
+  cartTotal   Float
+  orderStatus String           @default("Not Process")
+  createdAt   DateTime         @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
+  updatedAt   DateTime         @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
+  orderedBy   User             @relation(fields: [orderedById], references: [id])
+  orderedById Int
+}
+
+model ProductOnOrder {
+  id        Int     @id @default(autoincrement())
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade) //onDelete: Cascade ตารางถูกลบ model product on order ก็จะถูกลบไปด้วย
+  productId Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+  count     Int
+  price     Float
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
+  updatedAt DateTime @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
+}
+
+model Cart {
+  id          Int             @id @default(autoincrement())
+  products    ProductOnCart[]
+  cartTotal   Float
+  createdAt   DateTime        @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
+  updatedAt   DateTime        @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
+  orderedBy   User            @relation(fields: [orderedById], references: [id])
+  orderedById Int
+}
+
+model ProductOnCart {
+  id        Int     @id @default(autoincrement())
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  count     Int
+  price     Float
+}
+
+model Image {
+  id         Int      @id @default(autoincrement())
+  assed_id   String
+  public_id  String
+  url        String
+  secure_url String
+  createdAt  DateTime @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
+  updatedAt  DateTime @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int
+}
