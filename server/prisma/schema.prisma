@@ -40,6 +40,8 @@ model Product {
   iamges      Image[]
   createdAt   DateTime         @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
   updatedAt   DateTime         @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
+  category    Category?        @relation(fields: [categoryId], references: [id])
+  categoryId  Int?
 }
 
 model Order {
@@ -64,10 +66,11 @@ model ProductOnOrder {
 }
 
 model Category {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
-  createdAt DateTime @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
-  updatedAt DateTime @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
+  products  Product[]
+  createdAt DateTime  @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
+  updatedAt DateTime  @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
 }
 
 model Cart {
