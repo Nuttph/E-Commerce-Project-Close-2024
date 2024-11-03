@@ -3,7 +3,7 @@ const router = express.Router();
 
 // @ENDPOINT http://localhost:5000/api/product
 router.post("/product");
-router.get("/product/:id");
+router.get("/products/:count");
 router.delete("/product/:id");
 router.post("/productby");
 router.post("/search/filters");
