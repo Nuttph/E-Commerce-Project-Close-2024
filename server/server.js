@@ -10,7 +10,7 @@ app.use(express.json());
 
 // app.use("/api", authRouter);
 // app.use("/api", categoryRouter);
-console.log(readdirSync("./routes"));
+// console.log(readdirSync("./routes"));
 readdirSync("./routes").map((item) => {
   app.use("/api", require(`./routes/${item}`));
 });
@@ -19,5 +19,5 @@ app.post("/api", (req, res) => {
   console.log(req.body);
 });
 app.listen(5000, () => {
-  console.log("http://localhost:5000");
+  console.log("Console:Server is running");
 });
