@@ -147,7 +147,17 @@ exports.listby = async (req, res) => {
 };
 exports.searchFilters = async (req, res) => {
   try {
-    res.send("Hello SearchFilters Product");
+    const { query, category, price } = req.body;
+    if (query) {
+      console.log("query-->", query);
+    }
+    if (category) {
+      console.log("category-->", category);
+    }
+    if (price) {
+      console.log("price-->", price);
+    }
+    res.send("search filters");
   } catch (err) {
     console.log(err);
     res.status(500).json({
