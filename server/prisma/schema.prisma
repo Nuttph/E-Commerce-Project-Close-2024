@@ -37,7 +37,7 @@ model Product {
   quantity    Int
   orderItems  ProductOnOrder[]
   cartItems   ProductOnCart[]
-  iamges      Image[]
+  images      Image[]
   createdAt   DateTime         @default(now()) // ข้อมูลลง DB บันทึก time ตอนนั้น
   updatedAt   DateTime         @updatedAt // ข้อมูลมีการแก้ไข ให้ update time ใน DB
   category    Category?        @relation(fields: [categoryId], references: [id])

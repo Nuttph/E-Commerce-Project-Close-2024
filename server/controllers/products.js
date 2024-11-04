@@ -11,9 +11,17 @@ exports.create = async (req, res) => {
         price: parseFloat(price),
         quantity: parseInt(quantity),
         categoryId: parseInt(categoryId),
+        images: {
+          create: images.map((item) => ({
+            assed_id: item.assed_id,
+            public_id: item.public_id,
+            url: item.url,
+            secure_url: item.secure_url,
+          })),
+        },
       },
     });
-    res.send("Hello Create Product");
+    res.send(product);
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -23,8 +31,37 @@ exports.create = async (req, res) => {
 };
 exports.list = async (req, res) => {
   try {
-    const { count } = req.param;
-    res.send("Hello List Product");
+    const { count } = req.params;
+    const products = await prisma.product.findMany({
+      take: parseInt(count), //take คือการเอาข้อมูลของ arrey มาจำนวน count
+      orderBy: { createdAt: "desc" }, //desc คือจากมากไปน้อย || asc จากน้อยไปมาก
+      include: {
+        category: true,
+        images: true,
+      },
+    });
+    res.send(products);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};
+exports.read = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const products = await prisma.product.findFirst({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        category: true,
+        images: true,
+      },
+    });
+    res.send(products);
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -34,8 +71,37 @@ exports.list = async (req, res) => {
 };
 exports.update = async (req, res) => {
   try {
-    const { id } = req.param;
-    res.send("Hello Update Product");
+    const { title, description, price, quantity, categoryId, images } =
+      req.body;
+
+    //clear image of cloud
+    await prisma.image.deleteMany({
+      where: {
+        productId: Number(req.params.id),
+      },
+    });
+
+    const product = await prisma.product.update({
+      where: {
+        id: parseInt(req.params.id),
+      },
+      data: {
+        title: title,
+        description: description,
+        price: parseFloat(price),
+        quantity: parseInt(quantity),
+        categoryId: parseInt(categoryId),
+        images: {
+          create: images.map((item) => ({
+            assed_id: item.assed_id,
+            public_id: item.public_id,
+            url: item.url,
+            secure_url: item.secure_url,
+          })),
+        },
+      },
+    });
+    res.send(product);
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -45,7 +111,14 @@ exports.update = async (req, res) => {
 };
 exports.remove = async (req, res) => {
   try {
-    res.send("Hello Remove Product");
+    const { id } = req.params;
+    await prisma.product.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+    //ลบรูปใน clound ด้วย
+    res.send("Delete Success");
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -55,7 +128,16 @@ exports.remove = async (req, res) => {
 };
 exports.listby = async (req, res) => {
   try {
-    res.send("Hello Listby Product");
+    const { sort, order, limit } = req.body;
+    // console.log(sort, order, limit);
+    const product = await prisma.product.findMany({
+      take: Number(limit),
+      orderBy: { [sort]: order },
+      include: {
+        category: true,
+      },
+    });
+    res.send(product);
   } catch (err) {
     console.log(err);
     res.status(500).json({
