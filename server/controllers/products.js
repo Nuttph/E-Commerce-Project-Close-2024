@@ -20,6 +20,9 @@ exports.create = async (req, res) => {
           })),
         },
       },
+      include: {
+        category: true,
+      },
     });
     res.send(product);
   } catch (err) {
@@ -188,6 +191,25 @@ const handlePrice = async (req, res, price) => {
   }
 };
 
+const handleCategory = async (req, res, categoryId) => {
+  try {
+    const product = await prisma.product.findMany({
+      where: {
+        categoryId: {
+          in: categoryId,
+        },
+      },
+      include: {
+        category: true,
+        images: true,
+      },
+    });
+    res.send(product);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
 exports.searchFilters = async (req, res) => {
   try {
     const { query, category, price } = req.body;
@@ -197,6 +219,7 @@ exports.searchFilters = async (req, res) => {
     }
     if (category) {
       console.log("category-->", category);
+      await handleCategory(req, res, category);
     }
     if (price) {
       console.log("price-->", price);
