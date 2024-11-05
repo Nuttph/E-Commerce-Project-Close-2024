@@ -145,19 +145,64 @@ exports.listby = async (req, res) => {
     });
   }
 };
+
+//search filters function
+const handleQuery = async (req, res, query) => {
+  try {
+    const product = await prisma.product.findMany({
+      where: {
+        title: {
+          contains: query,
+        },
+      },
+      include: {
+        category: true,
+        images: true,
+      },
+    });
+    res.send(product);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+const handlePrice = async (req, res, price) => {
+  try {
+    const product = await prisma.product.findMany({
+      where: {
+        price: {
+          gt: price[0],
+          lt: price[1],
+        },
+      },
+      include: {
+        category: true,
+        images: true,
+      },
+    });
+    res.send(product);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 exports.searchFilters = async (req, res) => {
   try {
     const { query, category, price } = req.body;
     if (query) {
       console.log("query-->", query);
+      await handleQuery(req, res, query);
     }
     if (category) {
       console.log("category-->", category);
     }
     if (price) {
       console.log("price-->", price);
+      await handlePrice(req, res, price);
     }
-    res.send("search filters");
+    // res.send("search filters");
   } catch (err) {
     console.log(err);
     res.status(500).json({
