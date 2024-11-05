@@ -64,3 +64,12 @@ exports.saveOrder = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+exports.getOrder = async (req, res) => {
+  try {
+    res.send("Hello getOrder");
+  } catch (error) {
+    console.log(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
