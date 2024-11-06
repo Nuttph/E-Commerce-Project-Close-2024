@@ -2,7 +2,16 @@ const { prisma } = require("../config/prisma");
 
 exports.listUsers = async (req, res) => {
   try {
-    res.send("Hello Users");
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        enabled: true,
+        address: true,
+      },
+    });
+    res.json(users);
   } catch (error) {
     console.log(err);
     res.status(500).json({ message: "Server Error" });
@@ -12,8 +21,6 @@ exports.listUsers = async (req, res) => {
 exports.changeStatus = async (req, res) => {
   try {
     const { id, enabled } = req.body;
-    console.log(id);
-    console.log(enabled);
 
     const user = await prisma.user.update({
       where: {
@@ -51,8 +58,51 @@ exports.changeRole = async (req, res) => {
 exports.userCart = async (req, res) => {
   try {
     const { cart } = req.body;
-    console.log(cart);
-    res.send("Hello userCart");
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(req.user.id),
+      },
+    });
+    //delete old cart item
+    await prisma.productOnCart.deleteMany({
+      where: {
+        cart: {
+          orderedById: user.id,
+        },
+      },
+    });
+    //delete old cart
+    await prisma.cart.deleteMany({
+      where: {
+        orderedById: user.id,
+      },
+    });
+
+    //เตรียมสินค้า
+    let products = cart.map((item) => ({
+      productId: item.id,
+      count: item.count,
+      price: item.price,
+    }));
+    console.log("เตรียมสินค้า ", products);
+
+    //หาผลรม
+    let cartTotal = products.reduce(
+      (sum, item) => sum + item.price * item.count,
+      0
+    );
+
+    //new cart
+    const newCart = await prisma.cart.create({
+      data: {
+        products: {
+          create: products,
+        },
+        cartTotal: cartTotal,
+        orderedById: user.id,
+      },
+    });
+    res.send("Add Cart Success");
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
@@ -60,7 +110,24 @@ exports.userCart = async (req, res) => {
 };
 exports.getUserCart = async (req, res) => {
   try {
-    res.send("Hello getUserCart");
+    //req.user.id
+    const cart = await prisma.cart.findFirst({
+      where: {
+        orderedById: Number(req.user.id),
+      },
+      include: {
+        products: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+    console.log(cart);
+    res.json({
+      products: cart.products,
+      cartTotal: cart.cartTotal,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
