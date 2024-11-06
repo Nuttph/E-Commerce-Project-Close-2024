@@ -135,7 +135,30 @@ exports.getUserCart = async (req, res) => {
 };
 exports.emptyCart = async (req, res) => {
   try {
-    res.send("Hello emptyCart");
+    const cart = await prisma.cart.findFirst({
+      where: {
+        orderedById: Number(req.user.id),
+      },
+    });
+    if (!cart) {
+      return res.status(400).json({ message: "No Cart" });
+    }
+    console.log("cart id = ", cart.id);
+    await prisma.productOnCart.deleteMany({
+      where: {
+        cartId: cart.id,
+      },
+    });
+    const result = await prisma.cart.deleteMany({
+      where: {
+        orderedById: Number(req.user.id),
+      },
+    });
+    console.log(result);
+    res.json({
+      message: "Cart Empty Success",
+      deteleCount: result.count,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
@@ -144,15 +167,95 @@ exports.emptyCart = async (req, res) => {
 
 exports.saveAddress = async (req, res) => {
   try {
-    res.send("Hello saveAddress");
+    const { address } = req.body;
+    await prisma.user.update({
+      where: {
+        id: req.user.id,
+      },
+      data: {
+        address: address,
+      },
+    });
+    res.json({
+      ok: true,
+      message: "Save Address Succecss!",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 exports.saveOrder = async (req, res) => {
   try {
-    res.send("Hello saveOrder");
+    //Step1 Get User Cart
+    const userCart = await prisma.cart.findFirst({
+      where: {
+        orderedById: req.user.id,
+      },
+      include: {
+        products: true,
+      },
+    });
+    //Check Empty
+    if (!userCart || userCart.products.length == 0) {
+      return res.status(400).json({ ok: false, message: "Cart is Empty" });
+    }
+    //Check Quantity
+    for (const item of userCart.products) {
+      const product = await prisma.product.findUnique({
+        where: { id: item.productId },
+        select: {
+          quantity: true,
+          title: true,
+        },
+      });
+      console.log(item);
+      console.log(product);
+      if (!product || item.count > product.quantity) {
+        return res.status(400).json({
+          ok: false,
+          message: `ขออภัย. สินค้า ${product?.title || "product"} หมด `,
+        });
+      }
+    }
+    //create a new order
+    const order = await prisma.order.create({
+      data: {
+        products: {
+          create: userCart.products.map((item) => ({
+            productId: item.productId,
+            count: item.count,
+            price: item.price,
+          })),
+        },
+        orderedBy: {
+          connect: { id: req.user.id },
+        },
+        cartTotal: userCart.cartTotal,
+      },
+    });
+
+    //update product ไปลบสินค้าใน stock
+    const update = userCart.products.map((item) => ({
+      where: { id: item.productId },
+      data: {
+        quantity: { decrement: item.count },
+        sold: { increment: item.count },
+      },
+    }));
+    console.log(update);
+
+    //รอ..
+    await Promise.all(update.map((updated) => prisma.product.update(updated)));
+
+    await prisma.cart.deleteMany({
+      where: {
+        orderedById: Number(req.user.id),
+      },
+    });
+
+    res.json({ ok: true, order });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
@@ -161,7 +264,25 @@ exports.saveOrder = async (req, res) => {
 
 exports.getOrder = async (req, res) => {
   try {
-    res.send("Hello getOrder");
+    const orders = await prisma.order.findMany({
+      where: {
+        orderedById: Number(req.user.id),
+      },
+      include: {
+        products: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (orders.length == 0) {
+      return res.status(400).json({ ok: false, message: "No orders" });
+    }
+
+    console.log(orders);
+    res.status(400).json({ ok: true, orders });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
