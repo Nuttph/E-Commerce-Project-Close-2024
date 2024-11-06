@@ -20,7 +20,23 @@ exports.changeOrderStatus = async (req, res) => {
 };
 exports.changeOrderAdmin = async (req, res) => {
   try {
-    res.send("getorder");
+    const orders = await prisma.order.findMany({
+      include: {
+        products: {
+          include: {
+            product: true,
+          },
+        },
+        orderedBy: {
+          select: {
+            id: true,
+            email: true,
+            address: true,
+          },
+        },
+      },
+    });
+    res.send(orders);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error" });
