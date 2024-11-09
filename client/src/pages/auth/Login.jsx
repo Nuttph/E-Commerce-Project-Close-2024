@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { toast } from 'react-toastify';
 import useEcomStore from "../../store/ecom-store";
-useEcomStore
+import { useNavigate } from "react-router-dom";
 const Login = () => {
+  const navigate = useNavigate()
   const { actionLogin } = useEcomStore()
   const [form, setFrom] = useState({
     email: "",
@@ -16,7 +17,8 @@ const Login = () => {
     //send to backend
     try {
       const res = await actionLogin(form)
-      console.log(res)
+      const role = res.data.payload.role
+      roleRedirect(role)
       toast.success('Welcome ' + res?.data?.payload?.email)
     } catch (err) {
       const errMsg = err.response?.data?.message
@@ -24,6 +26,15 @@ const Login = () => {
       console.log(err)
     }
   }
+
+  const roleRedirect = (role) => {
+    if (role == 'admin') {
+      navigate('/admin')
+    } else {
+      navigate('/user')
+    }
+  }
+
   return (
     <div>
       login
