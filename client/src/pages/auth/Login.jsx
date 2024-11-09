@@ -1,8 +1,9 @@
 import { useState } from "react";
-import axios from 'axios'
 import { toast } from 'react-toastify';
+import useEcomStore from "../../store/ecom-store";
+useEcomStore
 const Login = () => {
-
+  const { actionLogin } = useEcomStore()
   const [form, setFrom] = useState({
     email: "",
     password: "",
@@ -14,9 +15,9 @@ const Login = () => {
     e.preventDefault()
     //send to backend
     try {
-      const res = await axios.post('http://localhost:5000/api/login', form)
-      console.log(res.data)
-      toast.success(res.data)
+      const res = await actionLogin(form)
+      console.log(res)
+      toast.success('Welcome ' + res?.data?.payload?.email)
     } catch (err) {
       const errMsg = err.response?.data?.message
       toast.error(errMsg)
@@ -32,7 +33,6 @@ const Login = () => {
         Password
         <input className="border" onChange={handleOnChange} type="text" name="password" />
         <button className="bg-blue-500 rounded-md" onClick={handleSubmit}>login</button>
-
       </form>
     </div>
   );
