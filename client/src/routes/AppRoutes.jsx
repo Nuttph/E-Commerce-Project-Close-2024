@@ -21,12 +21,12 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
             { index: true,element:<Home/>},
-            { path: '/shop',element:<Shop/>},
-            { path: '/cart',element:<Cart/>},
-            { path: '/history',element:<History />},
-            { path: '/checkout',element:<Checkout />},
-            { path: '/login',element:<Login />},
-            { path: '/register',element:<Register />},
+            { path: 'shop',element:<Shop/>},
+            { path: 'cart',element:<Cart/>},
+            { path: 'history',element:<History />},
+            { path: 'checkout',element:<Checkout />},
+            { path: 'login',element:<Login />},
+            { path: 'register',element:<Register />},
         ]
   },
   {
@@ -34,9 +34,9 @@ const router = createBrowserRouter([
     element: <LayoutAdmin />,
     children: [
       {index:true,element:<Dashboard />},
-      {path:'/category',element:<Category/>},
-      {path:'/product',element:<Product/>},
-      {path:'/manage',element:<Manage/>},
+      {path:'category',element:<Category/>},
+      {path:'product',element:<Product/>},
+      {path:'manage',element:<Manage/>},
     ]
   },
   {
