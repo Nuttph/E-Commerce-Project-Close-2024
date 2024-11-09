@@ -2,11 +2,13 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const { readdirSync } = require("fs");
+const core = require("cors");
 // const authRouter = require("./routes/auth");
 // const categoryRouter = require("./routes/category");
 //middleware
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(core());
 
 // app.use("/api", authRouter);
 // app.use("/api", categoryRouter);
