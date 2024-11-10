@@ -18,6 +18,7 @@ const Login = () => {
     try {
       const res = await actionLogin(form)
       const role = res.data.payload.role
+      console.log(res)
       roleRedirect(role)
       toast.success('Welcome ' + res?.data?.payload?.email)
     } catch (err) {

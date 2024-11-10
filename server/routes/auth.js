@@ -1,12 +1,7 @@
 const express = require("express");
 const router = express.Router();
 //import controller
-const {
-  register,
-  login,
-  currentUser,
-  currentAdmin,
-} = require("../controllers/auth");
+const { register, login, currentUser } = require("../controllers/auth");
 
 //import middle ware
 const { adminCheck, authCheck } = require("../middlewares/authChech");

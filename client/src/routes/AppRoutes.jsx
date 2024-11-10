@@ -1,4 +1,4 @@
-import { createBrowserRouter,RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from '../pages/Home'
 import Shop from '../pages/Shop'
 import Cart from '../pages/Cart'
@@ -14,46 +14,48 @@ import Product from '../pages/admin/Product'
 import Manage from '../pages/admin/Manage'
 import LayoutUser from '../layouts/LayoutUser'
 import HomeUser from '../pages/user/HomeUser'
+import ProtectRouteUser from './ProtectRouteUser'
+import ProtectRouteAdmin from './ProtectRouteAdmin'
 
 const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <Layout />,
-        children: [
-            { index: true,element:<Home/>},
-            { path: 'shop',element:<Shop/>},
-            { path: 'cart',element:<Cart/>},
-            { path: 'history',element:<History />},
-            { path: 'checkout',element:<Checkout />},
-            { path: 'login',element:<Login />},
-            { path: 'register',element:<Register />},
-        ]
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      { index: true, element: <Home /> },
+      { path: 'shop', element: <Shop /> },
+      { path: 'cart', element: <Cart /> },
+      { path: 'history', element: <History /> },
+      { path: 'checkout', element: <Checkout /> },
+      { path: 'login', element: <Login /> },
+      { path: 'register', element: <Register /> },
+    ]
   },
   {
     path: '/admin',
-    element: <LayoutAdmin />,
+    element: <ProtectRouteAdmin element={<LayoutAdmin />} />,
     children: [
-      {index:true,element:<Dashboard />},
-      {path:'category',element:<Category/>},
-      {path:'product',element:<Product/>},
-      {path:'manage',element:<Manage/>},
+      { index: true, element: <Dashboard /> },
+      { path: 'category', element: <Category /> },
+      { path: 'product', element: <Product /> },
+      { path: 'manage', element: <Manage /> },
     ]
   },
   {
     path: '/user',
-    element: <LayoutUser />,
+    element: <ProtectRouteUser element={<LayoutUser />} />,
     children: [
-      {index:true,element:<HomeUser />},
+      { index: true, element: <HomeUser /> },
     ]
   },
-    
+
 ])
 
 const AppRoutes = () => {
   return (
-      <>
-        <RouterProvider router={router}/>
-      </>
+    <>
+      <RouterProvider router={router} />
+    </>
   )
 }
 
