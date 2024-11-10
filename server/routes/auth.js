@@ -12,7 +12,7 @@ const {
 const { adminCheck, authCheck } = require("../middlewares/authChech");
 router.post("/register", register);
 router.post("/login", login);
-router.post("/current-user", currentUser);
-router.post("/current-admin", currentAdmin);
+router.post("/current-user", authCheck, currentUser);
+router.post("/current-admin", authCheck, adminCheck, currentUser);
 
 module.exports = router;
