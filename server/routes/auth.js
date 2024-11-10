@@ -8,6 +8,8 @@ const {
   currentAdmin,
 } = require("../controllers/auth");
 
+//import middle ware
+const { adminCheck, authCheck } = require("../middlewares/authChech");
 router.post("/register", register);
 router.post("/login", login);
 router.post("/current-user", currentUser);
