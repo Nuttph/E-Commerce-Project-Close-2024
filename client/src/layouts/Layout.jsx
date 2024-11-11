@@ -3,10 +3,10 @@ import MainNav from "../components/MainNav"
 
 const Layout = () => {
   return (
-      <div>
-          <MainNav/>
-          <hr />
-          <Outlet/>
+    <div>
+      <MainNav />
+      <hr />
+      <Outlet />
     </div>
   )
 }

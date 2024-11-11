@@ -12,6 +12,12 @@ const ecomStore = (set) => ({
             token: res.data.token
         })
         return res
+    },
+    actionLogout: async () => {
+        set({
+            user: null,
+            token: null
+        })
     }
 })
 
