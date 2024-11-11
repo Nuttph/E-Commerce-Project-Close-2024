@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react"
 import useEcomStore from "../store/ecom-store"
 import { currentUser } from "../api/auth"

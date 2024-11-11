@@ -3,6 +3,7 @@ import useEcomStore from "../store/ecom-store"
 import LoadingToRedirect from "./LoadingToRedirect"
 import { currentAdmin } from "../api/auth"
 
+// eslint-disable-next-line react/prop-types
 const ProtectRouteAdmin = ({ element }) => {
 
     const [ok, setOk] = useState(false)
