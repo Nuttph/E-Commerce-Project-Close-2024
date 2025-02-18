@@ -3,6 +3,8 @@ const app = express();
 const morgan = require("morgan");
 const { readdirSync } = require("fs");
 const core = require("cors");
+const port = 5000;
+
 // const authRouter = require("./routes/auth");
 // const categoryRouter = require("./routes/category");
 //middleware
@@ -20,6 +22,6 @@ readdirSync("./routes").map((item) => {
 app.post("/api", (req, res) => {
   console.log(req.body);
 });
-app.listen(5000, () => {
-  console.log("Console:Server is running");
+app.listen(port, () => {
+  console.log(`Console:Server is running on http://localhost:${port}`);
 });
