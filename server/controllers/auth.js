@@ -70,8 +70,7 @@ exports.login = async (req, res) => {
     //Step 4 Generate Token
     jwt.sign(payload, process.env.SECRET, { expiresIn: "1d" }, (err, token) => {
       if (err) {
-        console.log(err);
-        return res.stats(500).json({ message: "Server Error" });
+        return res.status(500).json({ message: "Server Error", error: err });
       }
       res.json({ payload, token });
     });
